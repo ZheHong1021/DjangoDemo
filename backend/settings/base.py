@@ -71,10 +71,13 @@ INSTALLED_APPS = [
 
 # Thired party apps
 INSTALLED_APPS += [
-    # 'corsheaders',
-    # 'rest_framework', # rest_framework
-    # 'django_filters', # filters(排序、搜尋)
-    # 'django_extensions', # 全局自定義管理擴展的存儲庫
+    'debug_toolbar', # debug_toolbar
+    'corsheaders', # corsheaders
+    'rest_framework', # rest_framework
+    'rest_framework_simplejwt', # simple_jwt
+    'django_filters', # filters(排序、搜尋)
+    'django_extensions', # 全局自定義管理擴展的存儲庫
+    'drf_spectacular' # Swagger UI
 ]
 
 # Custom apps
