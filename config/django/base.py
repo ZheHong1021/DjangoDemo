@@ -10,30 +10,23 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
-from pathlib import Path
+
 
 import environ
 import os
 
-env = environ.Env(
-    # set casting, default value
-    DEBUG=(bool, False)
-)
 
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+from config.env import BASE_DIR, env
 
 # Take environment variables from .env file
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # False if not in os.environ because of casting above
-DEBUG = env('DEBUG')
+DEBUG = env.bool('DJANGO_DEBUG', default=True)
 
 # Raises Django's ImproperlyConfigured
 # exception if SECRET_KEY not in os.environ
 SECRET_KEY = env('SECRET_KEY')
-
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
@@ -52,26 +45,20 @@ DATABASES = {
 }
 
 
-
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=[])
 
 #region (Application definition)
-INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
+# Local apps
+LOCAL_APPS = [
+    'users',
+    'orders',
 ]
 
 # Thired party apps
-INSTALLED_APPS += [
-    'debug_toolbar', # debug_toolbar
+THIRD_PARTY_APPS  = [
     'corsheaders', # corsheaders
     'rest_framework', # rest_framework
     'rest_framework_simplejwt', # simple_jwt
@@ -80,11 +67,18 @@ INSTALLED_APPS += [
     'drf_spectacular' # Swagger UI
 ]
 
-# Custom apps
-INSTALLED_APPS += [
-    'users',
-    'orders',
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    *THIRD_PARTY_APPS,
+    *LOCAL_APPS,
 ]
+
+
 #endregion
 
 MIDDLEWARE = [
@@ -97,7 +91,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'backend.urls'
+ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
@@ -115,7 +109,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'backend.wsgi.application'
+WSGI_APPLICATION = 'config.wsgi.application'
 
 
 
@@ -164,3 +158,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #region (Custom User)
 AUTH_USER_MODEL = "users.CustomUser"
 #endregion
+
+# Third APP Configuration
+from config.settings.cors_header import *
+from config.settings.rest_framework import *
+from config.settings.simple_jwt import *
+from config.settings.swagger import *
+from config.settings.debug_toolbar import *

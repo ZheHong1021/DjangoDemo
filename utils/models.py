@@ -21,7 +21,8 @@ class baseUserModel(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     user = BaseUserForeignKey(
         CustomUser, 
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        blank=True, # 允許不修改
     )
 
     class Meta: 

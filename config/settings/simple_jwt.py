@@ -1,5 +1,5 @@
 
-from .base import *
+from ..django.base import *
 from datetime import timedelta
 
 SIMPLE_JWT = {

@@ -1,10 +1,14 @@
-from .base import *
+from config.django.base import DEBUG, MIDDLEWARE, INSTALLED_APPS
 
 # settings.py
 print(f"DEBUG={DEBUG}")
 if DEBUG:
     MIDDLEWARE += [
         'debug_toolbar.middleware.DebugToolbarMiddleware',
+    ]
+
+    INSTALLED_APPS += [
+        'debug_toolbar', # debug_toolbar
     ]
 
     

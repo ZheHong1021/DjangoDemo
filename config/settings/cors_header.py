@@ -1,4 +1,4 @@
-from .base import *
+from ..django.base import *
 
 
 # 建議放前面，但因為使用package，因此原本的MIDDLEWARE已經存在，要用 insert添加
