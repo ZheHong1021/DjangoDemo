@@ -64,7 +64,8 @@ THIRD_PARTY_APPS  = [
     'rest_framework_simplejwt', # simple_jwt
     'django_filters', # filters(排序、搜尋)
     'django_extensions', # 全局自定義管理擴展的存儲庫
-    'drf_spectacular' # Swagger UI
+    'drf_spectacular', # Swagger UI
+    'channels', # websocket
 ]
 
 INSTALLED_APPS = [
@@ -165,3 +166,4 @@ from config.settings.rest_framework import *
 from config.settings.simple_jwt import *
 from config.settings.swagger import *
 from config.settings.debug_toolbar import *
+from config.settings.channels import *
