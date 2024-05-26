@@ -1,5 +1,5 @@
 
-from ..django.base import *
+from config.django.base import SECRET_KEY
 from datetime import timedelta
 
 SIMPLE_JWT = {

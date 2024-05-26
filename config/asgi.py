@@ -11,6 +11,28 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.django.base')
+# 【Default】
+#region
+# os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.django.base')
 
-application = get_asgi_application()
+# application = get_asgi_application()
+#endregion
+
+
+# 【channels】
+from channels.routing import ProtocolTypeRouter, URLRouter
+from channels.auth import AuthMiddlewareStack
+from orders.routing import websocket_urlpatterns
+application = ProtocolTypeRouter({
+    # http請求
+    "http": get_asgi_application(),
+
+
+    # websocket請求
+    "websocket": AuthMiddlewareStack(
+        URLRouter(
+            websocket_urlpatterns
+        )
+    ),
+})
+
