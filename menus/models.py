@@ -12,6 +12,8 @@ class Menu(baseModel):
     path = models.CharField("菜單路由路徑", max_length=50, blank=True)
     component = models.CharField("菜單路由組件", max_length=50, blank=True)
     icon = models.CharField("菜單圖案", max_length=50, blank=True)
+    is_menu = models.BooleanField("是否為菜單", blank=True, default=True)
+    meta = models.JSONField("前端路由設定", blank=True, null=True)
     parent = models.ForeignKey(
         'self', 
         null=True, blank=True, 
