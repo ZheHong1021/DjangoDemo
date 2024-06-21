@@ -1,5 +1,5 @@
 from django.db import models
-from utils.models import baseUserModel
+from common.models import baseUserModel
 import uuid
 
 # Create your models here.
