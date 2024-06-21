@@ -56,6 +56,7 @@ LOCAL_APPS = [
     'users',
     'orders',
     'menus',
+    'jwt_auth_token',
 ]
 
 # Thired party apps
