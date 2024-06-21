@@ -8,13 +8,27 @@ class MenuFilter(DisabledPaginationFilter, filters.FilterSet):
     is_children = filters.BooleanFilter(
         method='filter_is_children'
     )
+    # 是否為Sidebar菜單
+    is_menu = filters.BooleanFilter(
+        method='filter_is_menu'
+    )
+    # 是否包含Children
+    include_children = filters.BooleanFilter(
+        method='filter_include_children'
+    )
 
     class Meta:
         model = Menu
-        fields = ['is_children']
+        fields = ['is_children', 'is_menu', 'include_children']
     
     def filter_is_children(self, queryset, name, value):
         if value:
             return queryset.filter(parent__isnull=False)
         return queryset.filter(parent__isnull=True)
+    
+    def filter_is_menu(self, queryset, name, value):
+        return queryset.filter(is_menu=value)
+    
+    def filter_include_children(self, queryset, name, value):
+        return queryset
     
