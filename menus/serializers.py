@@ -9,4 +9,7 @@ class MenuSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def get_children(self, instance):
-        return MenuSerializer(instance.children.all(), many=True).data
+        return MenuSerializer(
+            instance.children.all(), 
+            many=True
+        ).data
