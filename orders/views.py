@@ -7,4 +7,3 @@ from rest_framework import generics, status, viewsets
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    # permission_classes = [IsAccountAdminOrReadOnly]
