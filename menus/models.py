@@ -12,6 +12,13 @@ class Menu(baseModel):
     path = models.CharField("菜單路由路徑", max_length=50, blank=True)
     component = models.CharField("菜單路由組件", max_length=50, blank=True)
     icon = models.CharField("菜單圖案", max_length=50, blank=True)
+    parent = models.ForeignKey(
+        'self', 
+        null=True, blank=True, 
+        related_name='children', 
+        on_delete=models.CASCADE
+    )
     
     class Meta:
         db_table="menus"
+        ordering = ['priority']
