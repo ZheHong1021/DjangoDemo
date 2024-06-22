@@ -18,9 +18,14 @@ class MenuSerializerWithChildren(serializers.ModelSerializer):
     def get_children(self, instance):
         request = self.context.get('request')
         is_menu = request.query_params.get('is_menu', None)
+        is_disabled = request.query_params.get('is_disabled', None)
+
+        filters = {}
         if is_menu is not None:
-            is_menu = is_menu.lower() == 'true'
-            children = instance.children.filter(is_menu=is_menu)
-        else:
-            children = instance.children.all()
+            filters['is_menu'] = is_menu.lower() == 'true'
+
+        if is_disabled is not None:
+            filters['is_disabled'] = is_disabled.lower() == 'true'
+
+        children = instance.children.filter(**filters).order_by("priority")
         return MenuSerializerWithChildren(children, many=True, context=self.context).data
