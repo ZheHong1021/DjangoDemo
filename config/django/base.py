@@ -54,6 +54,7 @@ ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=[])
 # Local apps
 LOCAL_APPS = [
     'users',
+    'groups',
     'orders',
     'menus',
     'jwt_auth_token',

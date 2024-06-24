@@ -6,6 +6,7 @@ from config.django.base import DEBUG # 用於判斷目前開發模式
 urlpatterns = [
     path("api/", include('orders.urls')),
     path("api/", include('menus.urls')),
+    path("api/", include('groups.urls')),
     path("api/token/", include('jwt_auth_token.urls')),
 ]
 

@@ -9,14 +9,14 @@ class BaseUserForeignKey(models.ForeignKey):
 
 
 # 一般資訊(無用戶)
-class baseModel(models.Model):
+class BaseModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta: 
         abstract = True
 
 # 一般資訊(有用戶)
-class baseUserModel(models.Model):
+class BaseUserModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     user = BaseUserForeignKey(
@@ -25,5 +25,13 @@ class baseUserModel(models.Model):
         blank=True, # 允許不修改
     )
 
+    class Meta: 
+        abstract = True
+
+
+# UUID作為主鍵
+import uuid
+class BaseUUIDModel(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     class Meta: 
         abstract = True

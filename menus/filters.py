@@ -1,9 +1,9 @@
 from django_filters import rest_framework as filters
 from .models import Menu
-from common.filters import DisabledPaginationFilter
+from common.filters import DisabledPaginationFilter, SearchFilter, SelectFieldsFilter
 
 # 轉移出貨
-class MenuFilter(DisabledPaginationFilter, filters.FilterSet):
+class MenuFilter(DisabledPaginationFilter, SearchFilter, SelectFieldsFilter, filters.FilterSet):
     # 是否為子路由
     is_children = filters.BooleanFilter(
         method='filter_is_children'
