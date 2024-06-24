@@ -1,9 +1,9 @@
 from django.db import models
-from common.models import baseModel
+from common.models import BaseModel
 import uuid
 
 # Create your models here.
-class Menu(baseModel):
+class Menu(BaseModel):
     # UUID當主鍵
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     priority = models.IntegerField("顯示順位", null=True, blank=True)

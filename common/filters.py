@@ -83,3 +83,38 @@ class SearchFilter(filters.FilterSet):
         return field_object
 
 
+# 篩選出需要顯示的欄位
+class SelectFieldsFilter(filters.FilterSet):
+    select = filters.CharFilter(method='filter_by_select')
+
+    class Meta:
+        abstract = True
+
+    # 搜尋所有欄位(包含 annotate)
+    def get_search_fields(self, queryset):
+        # Get model fields
+        model_fields = [
+            f.name 
+            for f in queryset.model._meta.get_fields() 
+            if f.concrete
+        ]
+
+        # Get annotated fields
+        annotated_fields = list(queryset.query.annotations.keys())
+        return model_fields, annotated_fields
+    
+
+    def filter_by_select(self, queryset, name, value):
+        fields = value.split(',') # 列出需要顯示的欄位 (List)
+
+        # 得到所有欄位(model和 annotate)
+        model_fields, annotated_fields = self.get_search_fields(queryset)
+
+
+        if all(field in model_fields for field in fields) \
+            or all(field in annotated_fields for field in fields):
+            queryset = queryset.values(*fields)
+
+        
+
+        return queryset
