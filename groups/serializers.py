@@ -18,17 +18,28 @@ class GroupWithProfileSerializer(serializers.ModelSerializer):
 #region (內鍵 Group)
 # 內建 Group 添加的 Serializers
 def get_profile_and_validated_data(validated_data):
-    # 定義 Profile要新增的資料
-    profile_data = {
-        'name_zh': validated_data.pop('profile')['name_zh']  # 透過 pop將 profile給取出並重新定義為一個變數
-    }
+    group_validated_data = {}
 
-    return profile_data, validated_data
+    # Django內建的column只有 name
+    # 先確保傳遞進來的欄位有 name
+    if validated_data.get("name"):
+        name = validated_data.pop('name') # 透過 pop將 profile給取出並重新定義為一個變數
+        group_validated_data = {"name": name}
+
+
+    # 剩下的欄位就會是 profile的
+    profile_data = validated_data
+
+    return profile_data['profile'], group_validated_data
 
 class GroupSerializer(serializers.ModelSerializer):
     # profile的欄位
+    name = serializers.CharField(
+        required=False
+    )
     name_zh = serializers.CharField(
-        source='profile.name_zh'
+        source='profile.name_zh',
+        required=False
     )
 
     class Meta:
