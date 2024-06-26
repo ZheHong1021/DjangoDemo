@@ -4,15 +4,40 @@ from .models import GroupProfile, GroupWithProfile
 
 # Profile
 class GroupProfileSerializer(serializers.ModelSerializer):
+    # group = serializers.IntegerField(
+    #     source='group.id', read_only=True
+    # )
+    name = serializers.CharField(
+        source='group.name'
+    )
     class Meta:
         model = GroupProfile
-        fields = ['id', 'group', 'name_zh']
+        # fields = ['id', 'group', 'name', 'name_zh']
+        fields = ['id', 'name', 'name_zh']
+
+    def create(self, validated_data):
+        group_data = validated_data.pop('group')
+        group = Group.objects.create(**group_data)
+        group_profile = GroupProfile.objects.create(
+            group=group, 
+            **validated_data
+        )
+        return group_profile
+
+    def update(self, instance, validated_data):
+        group_data = validated_data.pop('group', None)
+        if group_data:
+            group = instance.group
+            group.name = group_data.get('name', group.name)
+            group.save()
+        return super().update(instance, validated_data)
+
 
 # MySQL View(Merge Profile and Group)
 class GroupWithProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = GroupWithProfile
-        fields = ['id', 'group_name', 'name_zh', 'group_id']
+        fields = ['id', 'name', 'name_zh']
 
 
 #region (內鍵 Group)
@@ -32,42 +57,42 @@ def get_profile_and_validated_data(validated_data):
 
     return profile_data['profile'], group_validated_data
 
-class GroupSerializer(serializers.ModelSerializer):
-    # profile的欄位
-    name = serializers.CharField(
-        required=False
-    )
-    name_zh = serializers.CharField(
-        source='profile.name_zh',
-        required=False
-    )
+# class GroupSerializer(serializers.ModelSerializer):
+#     # profile的欄位
+#     name = serializers.CharField(
+#         required=False
+#     )
+#     name_zh = serializers.CharField(
+#         source='profile.name_zh',
+#         required=False
+#     )
 
-    class Meta:
-        model = Group
-        fields = ['name', 'name_zh']  # 根據需要添加其他 GroupProfile 的字段
+#     class Meta:
+#         model = Group
+#         fields = ['name', 'name_zh']  # 根據需要添加其他 GroupProfile 的字段
 
-    def create(self, validated_data):
-        profile_data, validated_data = get_profile_and_validated_data(validated_data)
+#     def create(self, validated_data):
+#         profile_data, validated_data = get_profile_and_validated_data(validated_data)
 
-        group = Group.objects.create(**validated_data) # 剩下的validated_data就會只剩 group的
-        GroupProfile.objects.create(group=group, **profile_data)
-        return group
+#         group = Group.objects.create(**validated_data) # 剩下的validated_data就會只剩 group的
+#         GroupProfile.objects.create(group=group, **profile_data)
+#         return group
 
-    def update(self, instance, validated_data):
-        profile_data, validated_data = get_profile_and_validated_data(validated_data)
+#     def update(self, instance, validated_data):
+#         profile_data, validated_data = get_profile_and_validated_data(validated_data)
 
-        # 內鍵Group => 只會有 name這個欄位
-        instance.name = validated_data.get('name', instance.name)
-        instance.save()
+#         # 內鍵Group => 只會有 name這個欄位
+#         instance.name = validated_data.get('name', instance.name)
+#         instance.save()
 
-        # 找到新對應的 Profile
-        profile, created = GroupProfile.objects.get_or_create(group=instance)
-        # 可能 profile_data有多個欄位
-        for attr, value in profile_data.items():
-            # attr: 欄位 ； value: 值
-            setattr(profile, attr, value)
-        profile.save()
+#         # 找到新對應的 Profile
+#         profile, created = GroupProfile.objects.get_or_create(group=instance)
+#         # 可能 profile_data有多個欄位
+#         for attr, value in profile_data.items():
+#             # attr: 欄位 ； value: 值
+#             setattr(profile, attr, value)
+#         profile.save()
 
-        return instance
+#         return instance
 
-#endregion
+# #endregion
