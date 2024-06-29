@@ -35,3 +35,16 @@ class BaseUUIDModel(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     class Meta: 
         abstract = True
+
+
+
+# 軟刪除
+class SoftDeleteModel(models.Model):
+    is_deleted = models.BooleanField(default=False)
+
+    class Meta:
+        abstract = True
+
+    def delete(self, *args, **kwargs):
+        self.is_deleted = True
+        self.save()
