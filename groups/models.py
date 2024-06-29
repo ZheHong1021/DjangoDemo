@@ -5,10 +5,12 @@ from common.models import BaseUUIDModel, SoftDeleteModel
 
 class GroupProfile(BaseUUIDModel, SoftDeleteModel):
     group = models.OneToOneField(Group, on_delete=models.CASCADE, related_name='profile')
-    name_zh = models.CharField(max_length=100, blank=True)
+    name_zh = models.CharField(max_length=100, blank=True, unique=True)
 
     class Meta:
         db_table = "group_profile"
+    
+    
 
 
 # MySQL View

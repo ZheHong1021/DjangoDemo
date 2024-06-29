@@ -10,9 +10,20 @@ class GroupProfileSerializer(serializers.ModelSerializer):
     name = serializers.CharField(
         source='group.name'
     )
+    name_zh = serializers.CharField(required=True)
     class Meta:
         model = GroupProfile
         fields = ['id', 'name', 'name_zh']
+    
+    def validate_name(self, value):
+        if Group.objects.filter(name__exact=value).exists():
+            raise serializers.ValidationError("該角色代號已經存在!")
+        return value
+    
+    def validate_name_zh(self, value):
+        if GroupProfile.objects.filter(name_zh__exact=value).exists():
+            raise serializers.ValidationError("該角色名稱已經存在!")
+        return value
 
     def create(self, validated_data):
         group_data = validated_data.pop('group')
