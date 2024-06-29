@@ -7,9 +7,6 @@ from groups.exceptions import InvalidGroupRequestException
 
 # Profile
 class GroupProfileSerializer(serializers.ModelSerializer):
-    # group = serializers.IntegerField(
-    #     source='group.id', read_only=True
-    # )
     name = serializers.CharField(
         source='group.name'
     )
@@ -19,11 +16,16 @@ class GroupProfileSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'name_zh']
     
     def validate_name(self, value):
+        if self.instance.group.name == value:
+            return value
+        
         if Group.objects.filter(name__exact=value).exists():
             raise InvalidGroupRequestException("該角色代號已經存在!")
         return value
     
     def validate_name_zh(self, value):
+        if self.instance.name_zh == value:
+            return value
         if GroupProfile.objects.filter(name_zh__exact=value).exists():
             raise InvalidGroupRequestException("該角色名稱已經存在!")
         return value
@@ -41,7 +43,7 @@ class GroupProfileSerializer(serializers.ModelSerializer):
         group_data = validated_data.pop('group', None)
         if group_data:
             group = instance.group
-            group.name = group_data.get('name', group.name)
+            group.name = instance.group.name
             group.save()
         return super().update(instance, validated_data)
 
