@@ -4,11 +4,13 @@ from .serializers import \
     MenuSerializerWithoutChildren, \
     MenuSerializerWithChildren
 from .filters import MenuFilter
+from rest_framework.permissions import IsAuthenticated # 權限
 from common.paginations import CustomPagination
 
 class MenuViewSet(viewsets.ModelViewSet):
     queryset = Menu.objects.all()
     filterset_class = MenuFilter
+    permission_classes = [IsAuthenticated]
     pagination_class = CustomPagination
 
     # 將query傳遞給 Serializer
