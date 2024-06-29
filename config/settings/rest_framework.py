@@ -8,6 +8,11 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
 
     ],
+
+    # Custom Exception
+    'EXCEPTION_HANDLER': 'common.exceptions.custom_exception_handler',
+    # [DRF Default]
+    # 'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler',
     
     # Swagger-UI
     'DEFAULT_SCHEMA_CLASS': "drf_spectacular.openapi.AutoSchema",
