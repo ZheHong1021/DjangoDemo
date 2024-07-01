@@ -24,7 +24,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     firstname = models.CharField("名字", max_length=10, blank=True, null=True)
     lastname = models.CharField("姓氏", max_length=10, blank=True, null=True)
-    phone_number = models.IntegerField("手機號碼", blank=True, null=True)
+    phone_number = models.CharField("手機號碼", max_length=10, blank=True, null=True)
     age = models.IntegerField("年齡", blank=True, null=True)
     gender = models.CharField("性別", max_length=10, choices=GENDER_CHOICES, blank=True, default='private')
 

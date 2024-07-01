@@ -3,6 +3,9 @@ from .models import CustomUser
 
 
 class UserSerializer(serializers.ModelSerializer):
+    # 密碼只允許寫入
+    password = serializers.CharField(write_only=True, required=False)
+
     # 全名
     fullname = serializers.SerializerMethodField()
 
@@ -12,10 +15,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = "__all__"
-        # password只允許寫入
-        extra_kwargs = {
-            'password': {'write_only': True}
-        }
+      
 
     def get_fullname(self, instance):
         lastname = instance.lastname or ''
