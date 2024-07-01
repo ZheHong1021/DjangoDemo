@@ -16,7 +16,8 @@ class GroupProfileSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'name_zh']
     
     def validate_name(self, value):
-        if self.instance.group.name == value:
+        # 驗證該 Group有存在
+        if self.instance and self.instance.group.name == value:
             return value
         
         if Group.objects.filter(name__exact=value).exists():
@@ -24,7 +25,7 @@ class GroupProfileSerializer(serializers.ModelSerializer):
         return value
     
     def validate_name_zh(self, value):
-        if self.instance.name_zh == value:
+        if self.instance and self.instance.name_zh == value:
             return value
         if GroupProfile.objects.filter(name_zh__exact=value).exists():
             raise InvalidGroupRequestException("該角色名稱已經存在!")
