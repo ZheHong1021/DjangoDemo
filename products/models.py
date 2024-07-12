@@ -6,6 +6,7 @@ from django.db.models import Q
 class ProductCategory(BaseUUIDModel, SoftDeleteModel, BaseUserModel):
     name = models.CharField("產品種類", max_length=100, blank=True, unique=True)
     description = models.TextField("種類描述", blank=True, null=True)
+    color = models.CharField("色塊", max_length=10, blank=True, default="#000000")
     class Meta:
         db_table="product_category"
 
