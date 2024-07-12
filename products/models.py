@@ -25,13 +25,13 @@ class Product(BaseUUIDModel, SoftDeleteModel, BaseUserModel):
     status = models.CharField("訂單狀態",
         max_length=20, 
         choices=STATUS_CHOICES, 
-        default=AVAILABLE
+        default=OUT_OF_STOCK
     )
 
     name = models.CharField("產品名稱", max_length=100, blank=True, unique=True)
     description = models.TextField("產品描述", blank=True, null=True)
     price = models.IntegerField("產品價格", blank=True, default=1)
-    stock = models.PositiveIntegerField("產品庫存", blank=True)
+    stock = models.IntegerField("產品庫存", blank=True, default=0)
     
     category = models.ForeignKey(
         ProductCategory,

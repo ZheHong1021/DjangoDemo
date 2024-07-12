@@ -13,6 +13,12 @@ class ProductSerializer(ReadOnlyIdUserMixin, serializers.ModelSerializer):
         source="category.name",
         required=False, read_only=True
     )
+
+    # 產品狀態文字
+    status_display = serializers.SerializerMethodField()
     class Meta:
         model = Product
         fields = "__all__"
+    
+    def get_status_display(self, instance):
+        return instance.get_status_display()
