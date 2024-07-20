@@ -3,7 +3,7 @@ from .serializers import OrderSerializer
 from rest_framework import generics, status, viewsets
 from common.views import CreateWithUserMixin, UpdateWithUserMixin
 from rest_framework.permissions import IsAuthenticated # 權限
-
+from common.paginations import CustomPagination
 
 # 建立訂單 View
 class OrderViewSet(
@@ -14,3 +14,4 @@ class OrderViewSet(
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated,]
+    pagination_class = CustomPagination

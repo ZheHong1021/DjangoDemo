@@ -36,6 +36,12 @@ class BaseUUIDModel(models.Model):
     class Meta: 
         abstract = True
 
+# 備註
+class RemarkModel(models.Model):
+    remark = models.TextField("備註", null=True, blank=True)
+    class Meta: 
+        abstract = True
+
 
 
 # 軟刪除

@@ -5,6 +5,7 @@ from config.django.base import DEBUG # 用於判斷目前開發模式
 # 全域URL (不管 DEBUG)
 urlpatterns = [
     path("api/", include('orders.urls')),
+    path("api/", include('products.urls')),
     path("api/", include('users.urls')),
     path("api/", include('groups.urls')),
     path("api/", include('menus.urls')),
