@@ -3,10 +3,39 @@ from .serializers import UserSerializer
 from rest_framework import generics, status, viewsets
 from rest_framework.permissions import IsAuthenticated # 權限
 from common.paginations import CustomPagination
+from common.views import SwaggerSchemaMixin
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes, OpenApiResponse
 
 # 建立訂單 View
-class UserViewSet(viewsets.ModelViewSet):
+@extend_schema(
+    tags=['用戶管理'],
+    request={
+        'multipart/form-data': UserSerializer
+    },
+)
+class UserViewSet(SwaggerSchemaMixin, viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPagination
+
+    @extend_schema(
+        summary="得到所有用戶數據",
+        responses={
+            200: OpenApiResponse(response=OpenApiTypes.OBJECT, description="成功返回數據"),
+            401: OpenApiResponse(description="未授權"),
+            403: OpenApiResponse(description="禁止訪問"),
+        },
+        # parameters=[
+        #     OpenApiParameter(
+        #         name='param1', description='Description for param1', required=False, type=OpenApiTypes.INT
+        #     ),
+        #     OpenApiParameter(
+        #         name='param2', description='Description for param2', required=False, type=OpenApiTypes.STR
+        #     ),
+        # ],
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+  

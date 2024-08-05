@@ -9,13 +9,28 @@ from .serializers import \
 
 from .filters import GroupFilter
 from common.paginations import CustomPagination
-from common.views import SoftDeleteModelViewSet
+from common.views import SoftDeleteModelViewSet, SwaggerSchemaMixin
 
-class GroupProfileViewSet(SoftDeleteModelViewSet):
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes, OpenApiResponse
+
+@extend_schema(
+    tags=['角色管理'],
+    request={
+        'multipart/form-data': GroupProfileSerializer
+    },
+)
+class GroupProfileViewSet(SwaggerSchemaMixin, SoftDeleteModelViewSet):
     queryset = GroupProfile.objects.all()
     serializer_class = GroupProfileSerializer
 
-class GroupWithProfileViewSet(SoftDeleteModelViewSet, viewsets.ReadOnlyModelViewSet):
+
+@extend_schema(
+    tags=['角色管理'],
+    request={
+        'multipart/form-data': GroupWithProfileSerializer
+    },
+)
+class GroupWithProfileViewSet(SwaggerSchemaMixin, SoftDeleteModelViewSet):
     queryset = GroupWithProfile.objects.all()
     serializer_class = GroupWithProfileSerializer
     filterset_class = GroupFilter

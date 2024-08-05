@@ -7,6 +7,14 @@ from .filters import MenuFilter
 from rest_framework.permissions import IsAuthenticated # 權限
 from common.paginations import CustomPagination
 
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes, OpenApiResponse
+
+@extend_schema(
+    tags=['菜單管理'],
+    request={
+        'multipart/form-data': MenuSerializerWithChildren
+    },
+)
 class MenuViewSet(viewsets.ModelViewSet):
     queryset = Menu.objects.all()
     filterset_class = MenuFilter
