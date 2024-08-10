@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import Group
 from .models import GroupProfile, GroupWithProfile
-from groups.exceptions import InvalidGroupRequestException
 
 
 
@@ -21,14 +20,14 @@ class GroupProfileSerializer(serializers.ModelSerializer):
             return value
         
         if Group.objects.filter(name__exact=value).exists():
-            raise InvalidGroupRequestException("該角色代號已經存在!")
+            raise serializers.ValidationError("該角色代號已經存在!")
         return value
     
     def validate_name_zh(self, value):
         if self.instance and self.instance.name_zh == value:
             return value
         if GroupProfile.objects.filter(name_zh__exact=value).exists():
-            raise InvalidGroupRequestException("該角色名稱已經存在!")
+            raise serializers.ValidationError("該角色名稱已經存在!")
         return value
 
     def create(self, validated_data):
