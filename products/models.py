@@ -1,6 +1,7 @@
 from django.db import models
 from common.models import BaseUserModel, BaseUUIDModel, RemarkModel, SoftDeleteModel
 from django.db.models import Q
+from .managers import ProductManager, DeletedProductManager
 
 
 class ProductCategory(BaseUUIDModel, SoftDeleteModel, BaseUserModel):
@@ -30,8 +31,8 @@ class Product(BaseUUIDModel, SoftDeleteModel, BaseUserModel):
 
     name = models.CharField("產品名稱", max_length=100, blank=True, unique=True)
     description = models.TextField("產品描述", blank=True, null=True)
-    price = models.IntegerField("產品價格", blank=True, default=1)
-    stock = models.IntegerField("產品庫存", blank=True, default=0)
+    price = models.IntegerField("產品價格", blank=True, default=1) # 價格預設為 1
+    stock = models.IntegerField("產品庫存", blank=True, default=0) # 庫存預設為 0(後續會根據進貨改變)
     
     category = models.ForeignKey(
         ProductCategory,
@@ -39,6 +40,9 @@ class Product(BaseUUIDModel, SoftDeleteModel, BaseUserModel):
         related_name='products',
         blank=True
     )
+
+    objects = ProductManager() # 添加 Manager
+    delete_objects = DeletedProductManager() # 已經被軟刪除的數據
 
     class Meta:
         db_table="products"
