@@ -1,6 +1,7 @@
 from django.db import models
 from common.models import BaseUserModel, BaseUUIDModel, RemarkModel, SoftDeleteModel
 from django.db.models import Q
+from .managers import ProductManager, DeletedProductManager
 
 
 class ProductCategory(BaseUUIDModel, SoftDeleteModel, BaseUserModel):
@@ -39,6 +40,9 @@ class Product(BaseUUIDModel, SoftDeleteModel, BaseUserModel):
         related_name='products',
         blank=True
     )
+
+    objects = ProductManager() # 添加 Manager
+    delete_objects = DeletedProductManager() # 已經被軟刪除的數據
 
     class Meta:
         db_table="products"
