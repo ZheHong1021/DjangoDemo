@@ -1,12 +1,29 @@
 from rest_framework import serializers
 from .models import Product, ProductCategory
 from common.serializers import ReadOnlyIdUserMixin
-from rest_framework.validators import UniqueValidator
+from rest_framework.validators import UniqueValidator, UniqueTogetherValidator
 
 class ProductCategorySerializer(ReadOnlyIdUserMixin, serializers.ModelSerializer):
+    # 產品種類
+    name = serializers.CharField(
+        help_text="請輸入字元長度2~12且不重複的產品種類。",
+        required=True,
+        min_length=2,
+        max_length=12,
+        error_messages={
+            'required': '產品種類是必填的，請提供完整。',
+        },
+        validators = [
+            UniqueValidator(
+                queryset=ProductCategory.objects.filter(is_deleted=False),
+                message="該產品種類已經被使用，請使用其他種類名稱!"
+            )
+        ]
+    )
     class Meta:
         model = ProductCategory
         fields = "__all__"
+
 
 class ProductSerializer(ReadOnlyIdUserMixin, serializers.ModelSerializer):
     # 產品名稱
@@ -18,9 +35,9 @@ class ProductSerializer(ReadOnlyIdUserMixin, serializers.ModelSerializer):
         error_messages={
             'required': '產品名稱是必填的，請提供完整。',
         },
-        validators=[
-            UniqueValidator( # 唯一性錯誤回傳
-                queryset=Product.objects.all(), 
+        validators = [
+            UniqueValidator(
+                queryset=Product.objects.filter(is_deleted=False),
                 message="該產品名稱已經被使用，請使用其他名稱!。"
             )
         ]
@@ -37,6 +54,9 @@ class ProductSerializer(ReadOnlyIdUserMixin, serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = "__all__"
+
+        
+
        
     
     def get_status_display(self, instance):
