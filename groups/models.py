@@ -12,9 +12,8 @@ class GroupProfile(BaseUUIDModel, SoftDeleteModel):
 
         constraints = [
             models.UniqueConstraint(
-                fields=['name_zh', 'group'], 
-                condition=Q(is_deleted=False), 
-                name='unique_group_name_not_deleted'
+                fields=['name_zh', 'group', 'deleted_at'], 
+                name='unique_group_name_deleted_at'
             )
         ]
     

@@ -1,5 +1,7 @@
 from django.db import models
+from django.utils import timezone
 from users.models import CustomUser
+from .managers import SoftDeleteManager, AlreadySoftDeleteManager
 
 # 用戶的外來鍵
 class BaseUserForeignKey(models.ForeignKey):
@@ -47,10 +49,29 @@ class RemarkModel(models.Model):
 # 軟刪除
 class SoftDeleteModel(models.Model):
     is_deleted = models.BooleanField(default=False)
+    deleted_at = models.DateTimeField(null=True, blank=True, default=None)
+
+    objects = SoftDeleteManager() # 預設管理器 
+    all_objects = models.Manager() # 當需要搜尋到被軟刪除資料的管理器。[使用方式] Model.all_objects.all()
+    delete_objects = AlreadySoftDeleteManager() # 已經被軟刪除的數據
 
     class Meta:
         abstract = True
 
+    # 軟刪除
     def delete(self, *args, **kwargs):
         self.is_deleted = True
+        self.deleted_at = timezone.now() # 添加刪除時間
         self.save()
+
+    # 硬刪除
+    def hard_delete(self, *args, **kwargs):
+        super(SoftDeleteModel, self).delete()
+
+    
+    # 恢復軟刪除數據
+    def restore(self):
+        self.is_deleted = False
+        self.deleted_at = None
+        self.save()
+
