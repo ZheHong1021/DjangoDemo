@@ -22,7 +22,7 @@ from django.core.asgi import get_asgi_application
 # 【channels】
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
-from orders.routing import websocket_urlpatterns
+from websockets.routing import websocket_urlpatterns
 application = ProtocolTypeRouter({
     # http請求
     "http": get_asgi_application(),

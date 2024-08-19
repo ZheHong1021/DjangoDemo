@@ -3,7 +3,7 @@ from channels.exceptions import StopConsumer
 
 
 CONN_LIST = [] #本次展示群發功能，不採用lays用法，所以需要裝載所有連接的客戶資訊
-class OrderConsumer(WebsocketConsumer):
+class TestConsumer(WebsocketConsumer):
 
     def websocket_connect(self, message):
         #有客戶端來向後端發送ws自動觸發
