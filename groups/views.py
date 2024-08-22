@@ -9,7 +9,7 @@ from .serializers import \
 
 from .filters import GroupFilter
 from common.paginations import CustomPagination
-from common.views import SoftDeleteModelViewSet, SwaggerSchemaMixin
+from common.views import PermissionMixin, SoftDeleteModelViewSet, SwaggerSchemaMixin
 
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes, OpenApiResponse
 
@@ -19,7 +19,7 @@ from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes,
         'multipart/form-data': GroupProfileSerializer
     },
 )
-class GroupProfileViewSet(SwaggerSchemaMixin, SoftDeleteModelViewSet):
+class GroupProfileViewSet(PermissionMixin, SwaggerSchemaMixin, SoftDeleteModelViewSet):
     queryset = GroupProfile.objects.all()
     serializer_class = GroupProfileSerializer
 
@@ -30,7 +30,7 @@ class GroupProfileViewSet(SwaggerSchemaMixin, SoftDeleteModelViewSet):
         'multipart/form-data': GroupWithProfileSerializer
     },
 )
-class GroupWithProfileViewSet(SwaggerSchemaMixin, SoftDeleteModelViewSet):
+class GroupWithProfileViewSet(PermissionMixin, SwaggerSchemaMixin, SoftDeleteModelViewSet):
     queryset = GroupWithProfile.objects.all()
     serializer_class = GroupWithProfileSerializer
     filterset_class = GroupFilter
