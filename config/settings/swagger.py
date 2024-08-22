@@ -22,6 +22,7 @@ SPECTACULAR_SETTINGS = {
         {'name': 'JWT', 'description': '有關JWT相關的操作'},
         {'name': '用戶管理', 'description': '針對系統所註冊用戶的一些操作'},
         {'name': '角色管理', 'description': '針對系統角色進行數據的操作'},
+        {'name': '權限管理', 'description': '針對系統限定權限進行數據的操作'},
         {'name': '菜單管理', 'description': '針對菜單進行數據的操作'},
         {'name': '訂單管理', 'description': '針對訂單進行數據的操作'},
         {'name': '產品管理', 'description': '針對產品進行數據的操作'},
