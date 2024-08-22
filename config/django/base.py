@@ -58,6 +58,7 @@ LOCAL_APPS = [
     'products',
     'orders',
     'menus',
+    'permissions',
     'jwt_auth_token',
 ]
 

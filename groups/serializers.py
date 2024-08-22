@@ -1,21 +1,30 @@
 from rest_framework import serializers
 from django.contrib.auth.models import Group
 from .models import GroupProfile, GroupWithProfile
-
-
+from permissions.serializers import PermissionSerializer
 
 # Profile
 class GroupProfileSerializer(serializers.ModelSerializer):
-    name = serializers.CharField(
+    name = serializers.CharField( # Group Name
         source='group.name'
     )
-    name_zh = serializers.CharField(required=True)
+    name_zh = serializers.CharField( # Group Name in Chinese
+        required=True
+    )
+
+    # 權限
+    permissions = serializers.SerializerMethodField()
+
     class Meta:
         model = GroupProfile
-        fields = ['id', 'name', 'name_zh']
+        fields = ['id', 'name', 'name_zh', 'permissions']
     
+    # 得到權限數據
+    def get_permissions(self, instance):
+        return PermissionSerializer(instance.group.permissions.all(), many=True).data
+    
+    # 驗證該 Group有存在
     def validate_name(self, value):
-        # 驗證該 Group有存在
         if self.instance and self.instance.group.name == value:
             return value
         
@@ -30,21 +39,22 @@ class GroupProfileSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("該角色名稱已經存在!")
         return value
 
+    # 創建
     def create(self, validated_data):
-        group_data = validated_data.pop('group')
-        group = Group.objects.create(**group_data)
-        group_profile = GroupProfile.objects.create(
+        group_data = validated_data.pop('group') # 取出 Group Data
+        group = Group.objects.create(**group_data) # 創建 Group
+        group_profile = GroupProfile.objects.create( # 創建 Group Profile
             group=group, 
             **validated_data
         )
         return group_profile
 
     def update(self, instance, validated_data):
-        group_data = validated_data.pop('group', None)
-        if group_data:
+        group_data = validated_data.pop('group', None) # 取出 Group Data
+        if group_data: # 如果有 Group Data
             group = instance.group
             group.name = instance.group.name
-            group.save()
+            group.save() # 更新 Group
         return super().update(instance, validated_data)
 
 
@@ -54,20 +64,3 @@ class GroupWithProfileSerializer(serializers.ModelSerializer):
         model = GroupWithProfile
         fields = "__all__"
 
-
-#region (內鍵 Group)
-# 內建 Group 添加的 Serializers
-def get_profile_and_validated_data(validated_data):
-    group_validated_data = {}
-
-    # Django內建的column只有 name
-    # 先確保傳遞進來的欄位有 name
-    if validated_data.get("name"):
-        name = validated_data.pop('name') # 透過 pop將 profile給取出並重新定義為一個變數
-        group_validated_data = {"name": name}
-
-
-    # 剩下的欄位就會是 profile的
-    profile_data = validated_data
-
-    return profile_data['profile'], group_validated_data

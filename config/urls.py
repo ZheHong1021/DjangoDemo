@@ -9,6 +9,7 @@ urlpatterns = [
     path("api/", include('users.urls')),
     path("api/", include('groups.urls')),
     path("api/", include('menus.urls')),
+    path("api/", include('permissions.urls')),
     path("api/token/", include('jwt_auth_token.urls')),
 ]
 

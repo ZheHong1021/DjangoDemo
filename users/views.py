@@ -1,10 +1,13 @@
-from .models import CustomUser
-from .serializers import UserSerializer
 from rest_framework import generics, status, viewsets
 from rest_framework.permissions import IsAuthenticated # 權限
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes, OpenApiResponse
+
 from common.paginations import CustomPagination
 from common.views import PermissionMixin, SwaggerSchemaMixin
-from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes, OpenApiResponse
+
+from .models import CustomUser
+from .serializers import UserSerializer
+from .filters import UserFilter
 
 # 建立訂單 View
 @extend_schema(
@@ -18,6 +21,7 @@ class UserViewSet(PermissionMixin, SwaggerSchemaMixin, viewsets.ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPagination
+    filterset_class = UserFilter
 
     @extend_schema(
         summary="得到所有用戶數據",

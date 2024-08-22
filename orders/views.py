@@ -1,11 +1,13 @@
-from .models import Order
-from .serializers import OrderSerializer
 from rest_framework import generics, status, viewsets
-from common.views import PermissionMixin, CreateWithUserMixin, UpdateWithUserMixin
 from rest_framework.permissions import IsAuthenticated # 權限
-from common.paginations import CustomPagination
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes, OpenApiResponse
 
+from common.views import PermissionMixin, CreateWithUserMixin, UpdateWithUserMixin
+from common.paginations import CustomPagination
+
+from .models import Order
+from .serializers import OrderSerializer
+from .filters import OrderFilter
 
 # 建立訂單 View
 @extend_schema(
@@ -24,3 +26,4 @@ class OrderViewSet(
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated,]
     pagination_class = CustomPagination
+    filterset_class = OrderFilter

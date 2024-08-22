@@ -1,10 +1,9 @@
 from django_filters import rest_framework as filters
-from .models import GroupWithProfile
+from .models import Order
 from common.filters import DisabledPaginationFilter, SearchFilter, SelectFieldsFilter
 
-class GroupFilter(DisabledPaginationFilter, SearchFilter, SelectFieldsFilter, filters.FilterSet):
+class OrderFilter(DisabledPaginationFilter, SearchFilter, SelectFieldsFilter, filters.FilterSet):
     class Meta:
-        model = GroupWithProfile
+        model = Order
         fields = []
     
- 
