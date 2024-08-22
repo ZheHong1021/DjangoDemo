@@ -4,7 +4,6 @@ from rest_framework import generics, status, viewsets
 from rest_framework.permissions import IsAuthenticated # 權限
 from common.views import PermissionMixin, CreateWithUserMixin, UpdateWithUserMixin
 from common.paginations import CustomPagination
-from common.permissions import HasPermission
 
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes, OpenApiResponse
 
@@ -23,7 +22,7 @@ class ProductCategoryViewSet(
 ):
     queryset = ProductCategory.objects.all()
     serializer_class = ProductCategorySerializer
-    permission_classes = [IsAuthenticated, HasPermission]
+    permission_classes = [IsAuthenticated]
     pagination_class = CustomPagination
 
 
@@ -44,6 +43,6 @@ class ProductViewSet(
 ):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [IsAuthenticated,]
+    permission_classes = [IsAuthenticated]
     pagination_class = CustomPagination
 

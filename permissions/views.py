@@ -2,6 +2,7 @@ from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from common.paginations import CustomPagination
 from common.views import PermissionMixin, SwaggerSchemaMixin
+
 from drf_spectacular.utils import extend_schema, OpenApiResponse
 
 from django.contrib.auth.models import Permission
