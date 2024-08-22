@@ -11,6 +11,10 @@ class PermissionSerializer(serializers.ModelSerializer):
         read_only=True, required=False
     )
 
+    action = serializers.CharField( # 操作動作
+        read_only=True, required=False
+    )
+
     codename = serializers.CharField( # 不允許修改
         read_only=True, required=False
     )
