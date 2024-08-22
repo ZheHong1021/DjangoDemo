@@ -12,18 +12,33 @@ class UpdateWithUserMixin:
         serializer.save(user=self.request.user)
 
 # 權限定義使用 (自行依照 model去取得相對應的 required_permission)
+from common.permissions import HasPermission
+from rest_framework.permissions import IsAuthenticated
 class PermissionMixin:
     def get_permissions(self):
-        if self.action in ['list', 'retrieve']:
-            self.required_permission = f'view_{self.get_permission_codename()}'
-        elif self.action == 'create':
-            self.required_permission = f'add_{self.get_permission_codename()}'
-        elif self.action in ['update', 'partial_update']:
-            self.required_permission = f'change_{self.get_permission_codename()}'
-        elif self.action == 'destroy':
-            self.required_permission = f'delete_{self.get_permission_codename()}'
-        return super().get_permissions()
+        self.ensure_has_permission()
 
+        action_permission_map = { # Action對應權限
+            'list': 'view',
+            'retrieve': 'view',
+            'create': 'add',
+            'update': 'change',
+            'partial_update': 'change',
+            'destroy': 'delete'
+        }
+
+        action = action_permission_map.get(self.action) # 取得當前的Action
+        codename = self.get_permission_codename() # 取得權限名稱
+        self.required_permission = f'{action}_{codename}' # 組合權限名稱
+        return super().get_permissions()
+    
+    # 確保用戶有權限
+    def ensure_has_permission(self):
+        # 判斷用戶是否有權限
+        if HasPermission not in self.permission_classes:
+            self.permission_classes = [HasPermission] + list(self.permission_classes)
+
+    # 取得權限名稱
     def get_permission_codename(self):
         return self.queryset.model._meta.model_name
 
