@@ -1,7 +1,7 @@
 from .models import Order
 from .serializers import OrderSerializer
 from rest_framework import generics, status, viewsets
-from common.views import CreateWithUserMixin, UpdateWithUserMixin
+from common.views import PermissionMixin, CreateWithUserMixin, UpdateWithUserMixin
 from rest_framework.permissions import IsAuthenticated # 權限
 from common.paginations import CustomPagination
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes, OpenApiResponse
@@ -15,6 +15,7 @@ from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes,
     },
 )
 class OrderViewSet(
+    PermissionMixin,
     CreateWithUserMixin, 
     UpdateWithUserMixin,
     viewsets.ModelViewSet

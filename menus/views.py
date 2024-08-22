@@ -6,7 +6,7 @@ from .serializers import \
 from .filters import MenuFilter
 from rest_framework.permissions import IsAuthenticated # 權限
 from common.paginations import CustomPagination
-
+from common.views import PermissionMixin
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes, OpenApiResponse
 
 @extend_schema(
@@ -15,7 +15,7 @@ from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes,
         'multipart/form-data': MenuSerializerWithChildren
     },
 )
-class MenuViewSet(viewsets.ModelViewSet):
+class MenuViewSet(PermissionMixin, viewsets.ModelViewSet):
     queryset = Menu.objects.all()
     filterset_class = MenuFilter
     permission_classes = [IsAuthenticated]

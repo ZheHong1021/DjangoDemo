@@ -3,7 +3,7 @@ from .serializers import UserSerializer
 from rest_framework import generics, status, viewsets
 from rest_framework.permissions import IsAuthenticated # 權限
 from common.paginations import CustomPagination
-from common.views import SwaggerSchemaMixin
+from common.views import PermissionMixin, SwaggerSchemaMixin
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes, OpenApiResponse
 
 # 建立訂單 View
@@ -13,7 +13,7 @@ from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes,
         'multipart/form-data': UserSerializer
     },
 )
-class UserViewSet(SwaggerSchemaMixin, viewsets.ModelViewSet):
+class UserViewSet(PermissionMixin, SwaggerSchemaMixin, viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]

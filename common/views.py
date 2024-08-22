@@ -11,6 +11,23 @@ class UpdateWithUserMixin:
     def perform_update(self, serializer):
         serializer.save(user=self.request.user)
 
+# 權限定義使用 (自行依照 model去取得相對應的 required_permission)
+class PermissionMixin:
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            self.required_permission = f'view_{self.get_permission_codename()}'
+        elif self.action == 'create':
+            self.required_permission = f'add_{self.get_permission_codename()}'
+        elif self.action in ['update', 'partial_update']:
+            self.required_permission = f'change_{self.get_permission_codename()}'
+        elif self.action == 'destroy':
+            self.required_permission = f'delete_{self.get_permission_codename()}'
+        return super().get_permissions()
+
+    def get_permission_codename(self):
+        return self.queryset.model._meta.model_name
+
+
 
 # 軟刪除
 class SoftDeleteModelViewSet(viewsets.ModelViewSet):
