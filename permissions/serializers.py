@@ -6,10 +6,15 @@ class PermissionSerializer(serializers.ModelSerializer):
     content_type_name = serializers.CharField(
         read_only=True, required=False
     )
-    codename = serializers.CharField(
+    
+    content_type_app_label = serializers.CharField(
         read_only=True, required=False
     )
-    content_type = serializers.CharField(
+
+    codename = serializers.CharField( # 不允許修改
+        read_only=True, required=False
+    )
+    content_type = serializers.CharField( # 不允許修改
         read_only=True, required=False
     )
  
