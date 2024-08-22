@@ -1,10 +1,10 @@
 from django_filters import rest_framework as filters
-from .models import GroupWithProfile
+from .models import CustomUser
 from common.filters import DisabledPaginationFilter, SearchFilter, SelectFieldsFilter
 
-class GroupFilter(DisabledPaginationFilter, SearchFilter, SelectFieldsFilter, filters.FilterSet):
+class UserFilter(DisabledPaginationFilter, SearchFilter, SelectFieldsFilter, filters.FilterSet):
     class Meta:
-        model = GroupWithProfile
+        model = CustomUser
         fields = []
     
  

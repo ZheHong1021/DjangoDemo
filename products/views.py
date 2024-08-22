@@ -1,11 +1,13 @@
-from .models import Product, ProductCategory
-from .serializers import ProductSerializer, ProductCategorySerializer
 from rest_framework import generics, status, viewsets
 from rest_framework.permissions import IsAuthenticated # 權限
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes, OpenApiResponse
+
 from common.views import PermissionMixin, CreateWithUserMixin, UpdateWithUserMixin
 from common.paginations import CustomPagination
 
-from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes, OpenApiResponse
+from .models import Product, ProductCategory
+from .serializers import ProductSerializer, ProductCategorySerializer
+from .filters import ProductFilter, ProductCategoryFilter
 
 # 建立產品種類 View
 @extend_schema(
@@ -24,6 +26,7 @@ class ProductCategoryViewSet(
     serializer_class = ProductCategorySerializer
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPagination
+    filterset_class = ProductCategoryFilter
 
 
 
@@ -45,4 +48,5 @@ class ProductViewSet(
     serializer_class = ProductSerializer
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPagination
+    filterset_class = ProductFilter
 
