@@ -13,19 +13,23 @@ class HasPermission(BasePermission):
 
         # 需要驗證
         if required_permission:
+            # 當前用戶可以執行的權限(codename)
+            permissions = set() # 使用集合(查詢效率較高且不重複)
+
+            # 用戶的Permission
+            user_permissions = user.user_permissions.values_list("codename", flat=True)
+            permissions.update(user_permissions)
+
             # 該用戶的群組資訊
             groups = user.groups.all()
-
-            # 當前用戶可以執行的權限(codename)
-            user_permissions = set() # 使用集合(查詢效率較高且不重複)
 
             for group in groups:
                 # 群組的Permission
                 # group_permissions = group.permissions.values()
                 group_permissions = group.permissions.values_list("codename", flat=True)
-                user_permissions.update(group_permissions)
+                permissions.update(group_permissions)
 
-            return required_permission in user_permissions # 驗證是否存在
+            return required_permission in permissions # 驗證是否存在
             
 
         return True
