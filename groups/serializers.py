@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, Permission
 from .models import GroupProfile, GroupWithProfile
 from permissions.serializers import PermissionSerializer
 
@@ -13,15 +13,21 @@ class GroupProfileSerializer(serializers.ModelSerializer):
     )
 
     # 權限
-    permissions = serializers.SerializerMethodField()
+    permissions = serializers.CharField(
+        required=False, allow_blank=True
+    )
+
 
     class Meta:
         model = GroupProfile
         fields = ['id', 'name', 'name_zh', 'permissions']
     
-    # 得到權限數據
-    def get_permissions(self, instance):
-        return PermissionSerializer(instance.group.permissions.all(), many=True).data
+    # 如果还需要通过GET方法获取权限数据
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['permissions'] = PermissionSerializer(instance.group.permissions.all(), many=True).data
+        return representation
+    
     
     # 驗證該 Group有存在
     def validate_name(self, value):
@@ -47,14 +53,31 @@ class GroupProfileSerializer(serializers.ModelSerializer):
             group=group, 
             **validated_data
         )
+
+        permissions_data = validated_data.pop('permissions', None) # 取出 Group Data
+        # 權限
+        if permissions_data:
+            permissions_data = permissions_data.split(',') # 轉換成 List
+            group_profile.group.permissions.add(*permissions_data) # 添加權限
+           
         return group_profile
 
     def update(self, instance, validated_data):
         group_data = validated_data.pop('group', None) # 取出 Group Data
+        permissions_data = validated_data.pop('permissions', None) # 取出 Group Data
+
         if group_data: # 如果有 Group Data
             group = instance.group
             group.name = instance.group.name
             group.save() # 更新 Group
+        
+        # 權限
+        if permissions_data is not None:
+            instance.group.permissions.clear() # 清空權限
+            if permissions_data:
+                permissions_data = permissions_data.split(',') # 轉換成 List
+                instance.group.permissions.add(*permissions_data) # 添加權限
+
         return super().update(instance, validated_data)
 
 
