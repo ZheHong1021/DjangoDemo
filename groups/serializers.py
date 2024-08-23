@@ -21,7 +21,7 @@ class GroupProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GroupProfile
-        fields = ['id', 'name', 'name_zh', 'permissions']
+        fields = ['id', 'name', 'name_zh', 'permissions', 'group_id']
     
     # 如果还需要通过GET方法获取权限数据
     def to_representation(self, instance):
@@ -87,6 +87,11 @@ class GroupProfileSerializer(serializers.ModelSerializer):
 
 
 # MySQL View(Merge Profile and Group)
+class GroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Group
+        fields = "__all__"
+
 class GroupWithProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = GroupWithProfile
