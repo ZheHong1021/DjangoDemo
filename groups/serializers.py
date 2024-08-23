@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import Group, Permission
 from .models import GroupProfile, GroupWithProfile
 from permissions.serializers import PermissionSerializer
+from django.db import transaction
 
 # Profile
 class GroupProfileSerializer(serializers.ModelSerializer):
@@ -46,15 +47,18 @@ class GroupProfileSerializer(serializers.ModelSerializer):
         return value
 
     # 創建
+    @transaction.atomic # 確認都正確才執行操作
     def create(self, validated_data):
         group_data = validated_data.pop('group') # 取出 Group Data
+        permissions_data = validated_data.pop('permissions', None) # 取出 Group Data
+
+
         group = Group.objects.create(**group_data) # 創建 Group
         group_profile = GroupProfile.objects.create( # 創建 Group Profile
             group=group, 
             **validated_data
         )
 
-        permissions_data = validated_data.pop('permissions', None) # 取出 Group Data
         # 權限
         if permissions_data:
             permissions_data = permissions_data.split(',') # 轉換成 List
@@ -62,6 +66,7 @@ class GroupProfileSerializer(serializers.ModelSerializer):
            
         return group_profile
 
+    @transaction.atomic # 確認都正確才執行操作
     def update(self, instance, validated_data):
         group_data = validated_data.pop('group', None) # 取出 Group Data
         permissions_data = validated_data.pop('permissions', None) # 取出 Group Data
