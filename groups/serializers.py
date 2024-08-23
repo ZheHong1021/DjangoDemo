@@ -88,6 +88,10 @@ class GroupProfileSerializer(serializers.ModelSerializer):
 
 # MySQL View(Merge Profile and Group)
 class GroupSerializer(serializers.ModelSerializer):
+    name_zh = serializers.CharField(
+        source='profile.name_zh',
+        required=False, read_only=True
+    )
     class Meta:
         model = Group
         fields = "__all__"
