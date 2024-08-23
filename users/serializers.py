@@ -1,8 +1,8 @@
 from rest_framework import serializers
 from .models import CustomUser
 
-from django.contrib.auth.models import Permission
 from permissions.serializers import PermissionSerializer
+from groups.serializers import GroupSerializer
 
 class UserSerializer(serializers.ModelSerializer):
     # 密碼只允許寫入
@@ -14,12 +14,6 @@ class UserSerializer(serializers.ModelSerializer):
     # 性別顯示
     gender_display = serializers.SerializerMethodField()
 
-    # 權限(多對象)
-    # 這邊要寫 permissions 而不是 user_permissions，因為這邊多對象是指 Permission
-    permissions = serializers.CharField(
-        required=False, allow_blank=True
-    )
-    
     class Meta:
         model = CustomUser
         fields = "__all__"
@@ -37,28 +31,48 @@ class UserSerializer(serializers.ModelSerializer):
     # GET方法取得權限資料
     def to_representation(self, instance):
         representation = super().to_representation(instance)
+
+        # Permission
         representation['user_permissions'] = PermissionSerializer(
             instance.user_permissions.all(), 
             many=True
         ).data
+
+        # Group
+        representation['groups'] = GroupSerializer(
+            instance.groups.all(), 
+            many=True
+        ).data
+        
         return representation
 
     # 在寫入前，將資料格式進行調整
     def to_internal_value(self, data):
+        #region (權限)
         user_permissions_data = data.get('user_permissions', [])
-
         # 如果是字串，則轉換成 List
         if isinstance(user_permissions_data, str):
             # 如果確定有值，則轉換成 List，如果為空字串就轉為空List
             data['user_permissions'] = user_permissions_data.split(',')\
                                         if user_permissions_data \
                                         else []
-        # 如果是 List，則不用動
-        elif isinstance(user_permissions_data, list):
-            pass        
-        # 非以上兩種資料類型報錯
-        else:
+        # 非相對應的資料類型報錯(str / list)
+        elif not isinstance(user_permissions_data, list):
             raise serializers.ValidationError("user_permissions 欄位格式錯誤(List or String)")
+        #endregion
+
+        #region (權限)
+        groups_data = data.get('groups', [])
+        # 如果是字串，則轉換成 List
+        if isinstance(groups_data, str):
+            # 如果確定有值，則轉換成 List，如果為空字串就轉為空List
+            data['groups'] = groups_data.split(',')\
+                                        if groups_data \
+                                        else []
+        # 非相對應的資料類型報錯(str / list)
+        elif not isinstance(groups_data, list):
+            raise serializers.ValidationError("groups 欄位格式錯誤(List or String)")
+        #endregion
 
         return super().to_internal_value(data)
     
@@ -70,6 +84,9 @@ class UserSerializer(serializers.ModelSerializer):
         # 權限處理
         user_permissions_data = validated_data.pop('user_permissions', None)
         
+        # 角色處理
+        groups_data = validated_data.pop('groups', None)
+        
         user = CustomUser(**validated_data)
         user.set_password(password) # 再最後設定密碼並且儲存
         user.save()
@@ -78,11 +95,15 @@ class UserSerializer(serializers.ModelSerializer):
         if user_permissions_data is not None:
             user.user_permissions.add(*user_permissions_data) # 添加權限
 
+        # 角色添加(必須等到 user.save() 後才能添加)
+        if groups_data is not None:
+            user.groups.add(*groups_data) # 添加權限
+
         return user
     
     # 修改用戶
     def update(self, instance, validated_data):
-
+        #region (Permission)
         # 權限處理
         user_permissions_data = validated_data.pop('user_permissions', None)
 
@@ -90,5 +111,16 @@ class UserSerializer(serializers.ModelSerializer):
         if user_permissions_data is not None:
             instance.user_permissions.clear() # 清空權限
             instance.user_permissions.add(*user_permissions_data) # 重新設定權限
+        #endregion
+
+        #region (Group)
+        # 角色處理
+        groups_data = validated_data.pop('groups', None)
+
+        # 如果沒帶入 groups，則不處理
+        if groups_data is not None:
+            instance.groups.clear() # 清空權限
+            instance.groups.add(*groups_data) # 重新設定權限
+        #endregion
 
         return super().update(instance, validated_data)
