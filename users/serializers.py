@@ -75,8 +75,7 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
 
         # 權限添加(必須等到 user.save() 後才能添加)
-        if user_permissions_data:
-            print(user_permissions_data)
+        if user_permissions_data is not None:
             user.user_permissions.add(*user_permissions_data) # 添加權限
 
         return user
@@ -86,6 +85,8 @@ class UserSerializer(serializers.ModelSerializer):
 
         # 權限處理
         user_permissions_data = validated_data.pop('user_permissions', None)
+
+        # 如果沒帶入 user_permissions，則不處理
         if user_permissions_data is not None:
             instance.user_permissions.clear() # 清空權限
             instance.user_permissions.add(*user_permissions_data) # 重新設定權限
