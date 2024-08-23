@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class JwtAuthTokenConfig(AppConfig):
+class UsersConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'jwt_auth_token'
+    name = 'auth.users'

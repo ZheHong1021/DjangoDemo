@@ -53,13 +53,13 @@ ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=[])
 #region (Application definition)
 # Local apps
 LOCAL_APPS = [
-    'users',
-    'groups',
+    'auth.users',
+    'auth.groups',
+    'auth.permissions',
+    'auth.menus',
+    'auth.jwt_auth_token',
     'products',
     'orders',
-    'menus',
-    'permissions',
-    'jwt_auth_token',
 ]
 
 # Thired party apps
