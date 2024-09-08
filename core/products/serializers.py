@@ -2,6 +2,8 @@ from rest_framework import serializers
 from .models import Product, ProductCategory
 from common.serializers import ReadOnlyIdUserMixin
 from rest_framework.validators import UniqueValidator, UniqueTogetherValidator
+from drf_spectacular.utils import extend_schema_field
+from drf_spectacular.types import OpenApiTypes
 
 class ProductCategorySerializer(ReadOnlyIdUserMixin, serializers.ModelSerializer):
     # 產品種類
@@ -55,9 +57,6 @@ class ProductSerializer(ReadOnlyIdUserMixin, serializers.ModelSerializer):
         model = Product
         fields = "__all__"
 
-        
-
-       
-    
+    @extend_schema_field(OpenApiTypes.STR)
     def get_status_display(self, instance):
         return instance.get_status_display()
