@@ -77,7 +77,6 @@ class Command(BaseCommand):
             
 
             try:
-
                 # 引用 group
                 group_instance = Group.objects.get(
                     name=group_name
