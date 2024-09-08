@@ -4,6 +4,9 @@ from .models import CustomUser
 from core.auth.permissions.serializers import PermissionSerializer
 from core.auth.groups.serializers import GroupSerializer
 
+from drf_spectacular.utils import extend_schema_field
+from drf_spectacular.types import OpenApiTypes
+
 class UserSerializer(serializers.ModelSerializer):
     # 密碼只允許寫入
     password = serializers.CharField(write_only=True, required=False)
@@ -19,12 +22,14 @@ class UserSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     # 取得全名
+    @extend_schema_field(OpenApiTypes.STR)
     def get_fullname(self, instance):
         lastname = instance.lastname or ''
         firstname = instance.firstname or ''
         return lastname + firstname
 
     # 取得性別顯示
+    @extend_schema_field(OpenApiTypes.STR)
     def get_gender_display(self, instance):
         return instance.get_gender_display()
 
