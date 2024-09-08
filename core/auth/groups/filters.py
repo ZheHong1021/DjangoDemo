@@ -1,10 +1,11 @@
 from django_filters import rest_framework as filters
-from .models import GroupWithProfile
 from common.filters import DisabledPaginationFilter, SearchFilter, SelectFieldsFilter
+from django.contrib.auth.models import Group
+
 
 class GroupFilter(DisabledPaginationFilter, SearchFilter, SelectFieldsFilter, filters.FilterSet):
     class Meta:
-        model = GroupWithProfile
+        model = Group
         fields = []
     
  

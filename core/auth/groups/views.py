@@ -1,13 +1,10 @@
 from rest_framework import viewsets
-from .models import \
-            GroupProfile, \
-            GroupWithProfile
 
-from .serializers import \
-            GroupProfileSerializer, \
-            GroupWithProfileSerializer
+from .serializers import GroupSerializer
 
 from .filters import GroupFilter
+from django.contrib.auth.models import Group
+
 from common.paginations import CustomPagination
 from common.views import PermissionMixin, SoftDeleteModelViewSet, SwaggerSchemaMixin
 
@@ -16,22 +13,20 @@ from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes,
 @extend_schema(
     tags=['角色管理'],
     request={
-        'multipart/form-data': GroupProfileSerializer
+        'multipart/form-data': GroupSerializer
     },
 )
-class GroupProfileViewSet(PermissionMixin, SwaggerSchemaMixin, SoftDeleteModelViewSet):
-    queryset = GroupProfile.objects.all()
-    serializer_class = GroupProfileSerializer
-
-
-@extend_schema(
-    tags=['角色管理'],
-    request={
-        'multipart/form-data': GroupWithProfileSerializer
-    },
-)
-class GroupWithProfileViewSet(PermissionMixin, SwaggerSchemaMixin, SoftDeleteModelViewSet):
-    queryset = GroupWithProfile.objects.all()
-    serializer_class = GroupWithProfileSerializer
+class GroupViewSet(PermissionMixin, SwaggerSchemaMixin, viewsets.ModelViewSet):
+    queryset = Group.objects.all()
+    serializer_class = GroupSerializer
     filterset_class = GroupFilter
     pagination_class = CustomPagination
+
+    def get_queryset(self):
+        return self.queryset.filter(profile__is_deleted=False)
+
+    def perform_destroy(self, instance):
+        # Soft delete the instance
+        instance.profile.is_deleted = True
+        instance.profile.save()
+
