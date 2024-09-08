@@ -1,4 +1,5 @@
 from rest_framework import generics, status, viewsets
+from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated # 權限
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes, OpenApiResponse
 
@@ -42,4 +43,16 @@ class UserViewSet(PermissionMixin, SwaggerSchemaMixin, viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
-  
+
+
+
+# 得到現在登入用戶的資訊
+@extend_schema(
+    tags=['用戶管理'],
+)
+class CurrentUserView(generics.RetrieveAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user

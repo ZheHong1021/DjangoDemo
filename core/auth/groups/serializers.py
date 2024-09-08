@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import Group, Permission
 from .models import GroupProfile, GroupWithProfile
-from auth.permissions.serializers import PermissionSerializer
+from core.auth.permissions.serializers import PermissionSerializer
 from django.db import transaction
 
 # Profile

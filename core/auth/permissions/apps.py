@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class GroupsConfig(AppConfig):
+class PermissionsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'auth.groups'
+    name = 'core.auth.permissions'
