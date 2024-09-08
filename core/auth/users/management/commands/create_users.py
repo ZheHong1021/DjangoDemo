@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import Group
 from core.auth.users.models import CustomUser
-
+from django.contrib.auth.models import Group
 
 class Command(BaseCommand):
     help = '建立 menus資料表的資料'
@@ -21,6 +21,7 @@ class Command(BaseCommand):
                 "phone_number": None,
                 "age": None,
                 "gender": "private",
+                "group_name": "admin",
             },
             {
                 "is_superuser": False,
@@ -34,6 +35,7 @@ class Command(BaseCommand):
                 "phone_number": None,
                 "age": None,
                 "gender": "private",
+                "group_name": "guest",
             },
         ]
 
@@ -44,23 +46,49 @@ class Command(BaseCommand):
 
         # 將數據一一寫入
         for user in users:
+
             try:
-                # get_or_create() 方法會返回一個元組，第一個元素是 group_instance，第二個元素是 created
-                instance, created = CustomUser.objects.get_or_create(
-                    **user
-                )
+                # 取出 group_name
+                group_name = user.pop("group_name", None)
 
-                # 還要處理 password
-                instance.set_password(user["password"])
+                email = user.get("email")
+                instance = CustomUser.objects.filter(email=email).first()
 
-                # 如果 created 為 True，則 created_count 加 1
-                created_count += 1 if created else 0
 
+                # 已經存在!
+                if instance:
+                    self.stdout.write(self.style.WARNING(f"使用者 {email} 已經存在！"))
+                    created = False
+                else:
+                    instance = CustomUser(**user)
+                    created = True
                 
+                    # 還要處理 password
+                    instance.set_password(user["password"])
+                    instance.save()
+
+                    # 如果 created 為 True，則 created_count 加 1
+                    created_count += 1 if created else 0
+
+
             except Exception as e:
                 self.stdout.write(self.style.ERROR(f"生成 users 數據時發生錯誤！錯誤訊息：{e}"))
-                continue
         
+            
+
+            try:
+
+                # 引用 group
+                group_instance = Group.objects.get(
+                    name=group_name
+                )
+                # 將 user 加入 group
+                instance.groups.add(group_instance)
+
+                self.stdout.write(self.style.SUCCESS(f"成功綁定 (user={instance.username}, group={group_instance.name})！"))
+                
+            except Exception as e:
+                self.stdout.write(self.style.ERROR(f"綁定 users與 groups 數據時發生錯誤！錯誤訊息：{e}"))        
 
         
         
