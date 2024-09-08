@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils import timezone
-from auth.users.models import CustomUser
+from core.auth.users.models import CustomUser
 from .managers import SoftDeleteManager, AlreadySoftDeleteManager
 
 # 用戶的外來鍵

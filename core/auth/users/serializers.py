@@ -1,8 +1,8 @@
 from rest_framework import serializers
 from .models import CustomUser
 
-from auth.permissions.serializers import PermissionSerializer
-from auth.groups.serializers import GroupSerializer
+from core.auth.permissions.serializers import PermissionSerializer
+from core.auth.groups.serializers import GroupSerializer
 
 class UserSerializer(serializers.ModelSerializer):
     # 密碼只允許寫入

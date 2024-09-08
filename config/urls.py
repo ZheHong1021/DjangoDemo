@@ -4,13 +4,13 @@ from config.django.base import DEBUG # 用於判斷目前開發模式
 
 # 全域URL (不管 DEBUG)
 urlpatterns = [
-    path("api/", include('orders.urls')),
-    path("api/", include('products.urls')),
-    path("api/", include('auth.users.urls')),
-    path("api/", include('auth.groups.urls')),
-    path("api/", include('auth.menus.urls')),
-    path("api/", include('auth.permissions.urls')),
-    path("api/token/", include('auth.jwt_auth_token.urls')),
+    path("api/", include('core.orders.urls')),
+    path("api/", include('core.products.urls')),
+    path("api/", include('core.auth.users.urls')),
+    path("api/", include('core.auth.groups.urls')),
+    path("api/", include('core.auth.menus.urls')),
+    path("api/", include('core.auth.permissions.urls')),
+    path("api/token/", include('core.auth.jwt_auth_token.urls')),
 ]
 
 
