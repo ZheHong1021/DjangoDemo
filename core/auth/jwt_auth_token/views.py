@@ -13,6 +13,10 @@ from .serializers import MyTokenObtainPairSerializer
 from drf_spectacular.utils import extend_schema_view, extend_schema, OpenApiParameter, OpenApiRequest, OpenApiResponse
 from drf_spectacular.types import OpenApiTypes
 
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.exceptions import AuthenticationFailed
+
 #region (登入)
 @extend_schema_view(
     post=extend_schema(
@@ -28,7 +32,7 @@ from drf_spectacular.types import OpenApiTypes
     ),
 )
 class CustomTokenObtainPairView(TokenObtainPairView):
-    pass
+    serializer_class = MyTokenObtainPairSerializer
 #endregion
 
 
