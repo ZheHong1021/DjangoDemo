@@ -20,6 +20,7 @@ class GroupViewSet(PermissionMixin, SwaggerSchemaMixin, viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
     filterset_class = GroupFilter
+    pagination_class = CustomPagination
 
     def get_queryset(self):
         return self.queryset.filter(profile__is_deleted=False)
