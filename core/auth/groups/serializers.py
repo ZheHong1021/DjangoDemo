@@ -1,46 +1,64 @@
 from rest_framework import serializers
 from django.contrib.auth.models import Group, Permission
-from .models import GroupProfile, GroupWithProfile
+from .models import GroupProfile
 from core.auth.permissions.serializers import PermissionSerializer
 from django.db import transaction
+from rest_framework.validators import UniqueValidator, UniqueTogetherValidator
 
-# Profile
-class GroupProfileSerializer(serializers.ModelSerializer):
-    name = serializers.CharField( # Group Name
-        source='group.name'
+
+# MySQL View(Merge Profile and Group)
+class GroupSerializer(serializers.ModelSerializer):
+    name = serializers.CharField( # 群組代號
+        required=True,
+        help_text="請輸入字元長度2~4且不重複的群組代號。",
+        min_length=2,
+        max_length=4,
+        error_messages={
+            'required': '群組代號是必填的，請提供完整。',
+        },
+        validators = [
+            UniqueValidator(
+                queryset=Group.objects.filter(profile__is_deleted=False),
+                message="該群組代號已經被使用，請使用其他群組代號!"
+            )
+        ]
     )
-    name_zh = serializers.CharField( # Group Name in Chinese
-        required=True
+
+    name_zh = serializers.CharField( # 角色中文名稱
+        source='profile.name_zh',
+        required=True,
+        help_text="請輸入字元長度2~8且不重複的群組名稱。",
+        min_length=2,
+        max_length=8,
+        error_messages={
+            'required': '群組名稱是必填的，請提供完整。',
+        },
     )
 
     # 權限
     permissions = serializers.CharField(
-        required=False, allow_blank=True
+        required=True,
+        help_text="請填寫權限ID，多個權限ID請用逗號分隔(EX: id_1,id_2,id_3)。",
+        error_messages={
+            'required': '分配權限是必填的，請提供完整。',
+        },
     )
 
-
     class Meta:
-        model = GroupProfile
-        fields = ['id', 'name', 'name_zh', 'permissions', 'group_id']
+        model = Group
+        fields = "__all__"
     
     # 如果还需要通过GET方法获取权限数据
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        representation['permissions'] = PermissionSerializer(instance.group.permissions.all(), many=True).data
+        representation['permissions'] = PermissionSerializer(
+            instance.permissions.all(), many=True
+        ).data
         return representation
     
-    
-    # 驗證該 Group有存在
-    def validate_name(self, value):
-        if self.instance and self.instance.group.name == value:
-            return value
-        
-        if Group.objects.filter(name__exact=value).exists():
-            raise serializers.ValidationError("該角色代號已經存在!")
-        return value
-    
+    # 驗證群組名稱是否存在
     def validate_name_zh(self, value):
-        if self.instance and self.instance.name_zh == value:
+        if self.instance and self.instance.profile.name_zh == value:
             return value
         if GroupProfile.objects.filter(name_zh__exact=value).exists():
             raise serializers.ValidationError("該角色名稱已經存在!")
@@ -49,55 +67,48 @@ class GroupProfileSerializer(serializers.ModelSerializer):
     # 創建
     @transaction.atomic # 確認都正確才執行操作
     def create(self, validated_data):
-        group_data = validated_data.pop('group') # 取出 Group Data
-        permissions_data = validated_data.pop('permissions', None) # 取出 Group Data
+        # 取出 profile data
+        profile_data = validated_data.pop('profile')
 
+        # 取出權限
+        permissions = validated_data.pop('permissions', None) # 取出權限
+        
+        try:
+            # 創建 Group
+            group = Group.objects.create(**validated_data) # 創建 Group
 
-        group = Group.objects.create(**group_data) # 創建 Group
-        group_profile = GroupProfile.objects.create( # 創建 Group Profile
-            group=group, 
-            **validated_data
-        )
+            # 創建 Group Profile
+            group_profile = GroupProfile.objects.create( 
+                **profile_data,
+                group=group, 
+            )
 
-        # 權限
-        if permissions_data:
-            permissions_data = permissions_data.split(',') # 轉換成 List
-            group_profile.group.permissions.add(*permissions_data) # 添加權限
-           
-        return group_profile
+            # 權限
+            if permissions:
+                permissions = permissions.split(',') # 轉換成 List
+                group.permissions.add(*permissions) # 添加權限
+
+        except Exception as e:
+            raise serializers.ValidationError(str(e))
+       
+        return group
 
     @transaction.atomic # 確認都正確才執行操作
     def update(self, instance, validated_data):
-        group_data = validated_data.pop('group', None) # 取出 Group Data
+        profile_data = validated_data.pop('profile', None) # 取出 Profile Data
         permissions_data = validated_data.pop('permissions', None) # 取出 Group Data
 
-        if group_data: # 如果有 Group Data
-            group = instance.group
-            group.name = instance.group.name
-            group.save() # 更新 Group
+        if profile_data: # 如果有 Group Data
+            # 更新 Group Profile
+            profile = instance.profile
+            profile.name_zh = profile_data['name_zh']
+            profile.save() # 更新 Group
         
         # 權限
         if permissions_data is not None:
-            instance.group.permissions.clear() # 清空權限
+            instance.permissions.clear() # 清空權限
             if permissions_data:
                 permissions_data = permissions_data.split(',') # 轉換成 List
-                instance.group.permissions.add(*permissions_data) # 添加權限
+                instance.permissions.add(*permissions_data) # 添加權限
 
         return super().update(instance, validated_data)
-
-
-# MySQL View(Merge Profile and Group)
-class GroupSerializer(serializers.ModelSerializer):
-    name_zh = serializers.CharField(
-        source='profile.name_zh',
-        required=False, read_only=True
-    )
-    class Meta:
-        model = Group
-        fields = "__all__"
-
-class GroupWithProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = GroupWithProfile
-        fields = "__all__"
-
