@@ -9,7 +9,7 @@ class CreateWithUserMixin:
 # [修改時] 儲存使用者ID
 class UpdateWithUserMixin:
     def perform_update(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save(updated_by_user=self.request.user)
 
 # 權限定義使用 (自行依照 model去取得相對應的 required_permission)
 from common.permissions import HasPermission
