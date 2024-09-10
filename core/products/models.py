@@ -11,7 +11,7 @@ class ProductCategory(BaseUUIDModel, SoftDeleteModel, BaseUserModel):
 
     class Meta:
         db_table="product_category"
-        
+        default_related_name = 'product_category'
         constraints = [
             models.UniqueConstraint(
                 fields=['name', 'deleted_at'], 
@@ -50,7 +50,7 @@ class Product(BaseUUIDModel, SoftDeleteModel, BaseUserModel):
 
     class Meta:
         db_table="products"
-
+        default_related_name = 'product'
         constraints = [
             models.UniqueConstraint(
                 fields=['name', 'deleted_at'], 
