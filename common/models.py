@@ -27,8 +27,16 @@ class BaseUserModel(models.Model):
         blank=True, # 允許不修改
     )
 
+    updated_by_user = models.ForeignKey(
+        CustomUser,
+        related_name='updated_%(class)s',
+        on_delete=models.CASCADE,
+        null=True, blank=True, default=None
+    )
+
     class Meta: 
         abstract = True
+
 
 
 # UUID作為主鍵
